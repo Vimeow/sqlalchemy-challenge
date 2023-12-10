@@ -15,6 +15,7 @@ from flask import Flask, jsonify
 #################################################
 # Database Setup
 #################################################
+
 engine = create_engine("sqlite:///Resources/hawaii.sqlite")
 
 # reflect an existing database into a new model
@@ -30,13 +31,16 @@ station = Base.classes.station
 #################################################
 # Create an app (Flask Setup)
 #################################################
+
 app = Flask(__name__)
 # to keep order of sorted dictionary passed to jsonify() function
 app.json.sort_keys = False
 
+#################################################
 # (1)
 # Start at the homepage.
 # List all the available routes.
+#################################################
 
 
 @app.route("/")
@@ -51,9 +55,11 @@ def welcome():
         f"/api/v1.0/start/end(YYYY-MM-DD/YYYY-MM-DD)<br/>"
     )
 
+#################################################
 # (2)
 # Convert the query results to a dictionary by using date as the key and prcp as the value.
 # Return the JSON representation of the dictionary.
+#################################################
 
 
 @app.route("/api/v1.0/precipitation")
@@ -78,8 +84,10 @@ def precipitation():
 
     return jsonify(date_precipitation)
 
+#################################################
 # (3)
 # Return a JSON list of stations from the dataset.
+#################################################
 
 
 @app.route("/api/v1.0/stations")
@@ -98,9 +106,11 @@ def stations():
 
     return jsonify(station_list)
 
+#################################################
 # (4)
 # Query the dates and temperature observations of the most-active station for the previous year of data.
 # Return a JSON list of temperature observations for the previous year.
+#################################################
 
 
 @app.route("/api/v1.0/tobs")
@@ -120,17 +130,9 @@ def tobs():
     most_recent_date_obj = dt.datetime.strptime(
         most_recent_date_str, '(%Y-%m-%d)')
 
-    # return (
-    #     f"{most_recent_date_obj}"
-    # )
-
     # Calculate the date one year from the last date in data set.
     one_year_ago_date = dt.date(most_recent_date_obj.year, most_recent_date_obj.month,
                                 most_recent_date_obj.day) - dt.timedelta(days=366)
-
-    # return (
-    #     f"{one_year_ago_date}"
-    # )
 
     # Perform a query to retrieve the most active stations (the station with the most rows).
     year_tobs = (session.query(measurement.station)
@@ -139,10 +141,6 @@ def tobs():
                  .all())
 
     most_active_station = year_tobs[0][0]
-
-    # return (
-    #     f"{most_active_station}"
-    # )
 
     # Query the dates and temperature observations of the most-active station for the previous year of data
     results = (session.query(measurement.station, measurement.date, measurement.tobs)
@@ -163,8 +161,10 @@ def tobs():
 
     return jsonify(tobs_list)
 
+#################################################
 # (5)
 # Return a JSON list of the minimum temperature, the average temperature, and the maximum temperature for a specified start or start-end range.
+#################################################
 
 # For a specified start, calculate TMIN, TAVG, and TMAX for all the dates greater than or equal to the start date.
 
